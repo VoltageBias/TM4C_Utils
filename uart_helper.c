@@ -14,7 +14,7 @@
 
 #include "TM4C123GH6PM.h"
 #include "uart_helper.h"
-#include "bsp.h"
+#include "board_support_package.h"
 #include "tm4c_register_fields.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -237,7 +237,7 @@ void fstartUART(UART_modules_t UART_module, baud_t baud_rate){
 
 
 
-	//6. Optionally, configure the µDMA channel (see ìMicro Direct Memory Access (µDMA)î on page 585)
+	//6. Optionally, configure the ¬µDMA channel (see ‚ÄúMicro Direct Memory Access (¬µDMA)‚Äù on page 585)
 	//and enable the DMA option(s) in the UARTDMACTL register.
 
 
