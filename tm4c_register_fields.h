@@ -6,7 +6,7 @@
 // Released under a GNU General Public License v3.0
 //
 // FILENAME : tm4c_register_fields.h
-// PURPOSE  : A growing set of register bit fields from TM4C123GH6PM deatasheet
+// PURPOSE  : A growing set of register bit fields from TM4C123GH6PM datasheet
 //
 // Version 0: Oct 22, 2016
 //
@@ -43,6 +43,8 @@
 #define UARTCTL_SIREN (1U<<1)
 #define UARTCTL_TXE (1U<<8)
 #define UARTCTL_RXE (1U<<9)
+
+#define UARTFR_RXFE (1U<<4)
 
 #define UARTLCRH_PEN (1U<<1)
 #define UARTLCRH_EPS (1U<<2)
