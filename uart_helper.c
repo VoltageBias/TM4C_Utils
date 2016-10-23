@@ -32,7 +32,7 @@ void fprintcharUART(UART_modules_t UART_module, char ctosend) {
 		while( (UART0->FR & UARTFR_TXFF) != 0 );
 		 UART0->DR = ctosend;
 	break;
-						//TODO code other module cases here as required.
+				//TODO code other module cases here as required.
 	default:
 		while((UART0->FR & UARTFR_TXFF) != 0);
 		UART0->DR = ctosend;
@@ -64,6 +64,33 @@ void fprintstringUART(UART_modules_t UART_module, char *cpprintme)
 ///////////////////////fprintcharUART ends//////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
+////////////////////////////////////////////////////////////////////////////////
+// fgetcharUART() follows
+// Purpose: Returns a char read from one ('UART_module') of the TM4C's UARTs
+//
+////////////////////////////////////////////////////////////////////////////////
+char fgetCharUART(UART_modules_t UART_module){
+
+	char cReturnMe;
+
+	switch(UART_module)
+		{
+		case UART_0:
+			while( (UART0->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
+			cReturnMe = UART0->DR;   // retreive the newly arrived char
+		break;
+					//TODO code other module cases here as required.
+		default:
+			while( (UART0->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
+			cReturnMe = UART0->DR;   // retreive the newly arrived char
+		break;
+		}
+
+	return cReturnMe;
+}
+///////////////////////fgetcharUART() ends//////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 ////////////////////////////////////////////////////////////////////////////////
