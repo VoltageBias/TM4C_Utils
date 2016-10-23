@@ -48,6 +48,8 @@ void fprintcharUART(UART_modules_t, char);
 void fprintstringUART(UART_modules_t, char*);
 
 
+//Returns a char ('cpprintme') from one ('UART_module') of the TM4C's eight UARTs
+char fgetCharUART(UART_modules_t);
 
 ////////////////////////////////////////////////////////////////////////////////
 //                 end of UART Helper function prototypes                     //
