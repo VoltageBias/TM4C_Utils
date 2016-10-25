@@ -9,6 +9,7 @@
 // PURPOSE  : A set of helper functions to operate the TM4C123 UART
 //
 // Version 0: Oct 22, 2016
+// Version 1: Oct 25, 2016  - Added fprintUint32UART()
 //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,13 +33,12 @@ void fprintcharUART(UART_modules_t UART_module, char ctosend) {
 		while( (UART0->FR & UARTFR_TXFF) != 0 );
 		 UART0->DR = ctosend;
 	break;
-				//TODO code other module cases here as required.
+						//TODO code other module cases here as required.
 	default:
 		while((UART0->FR & UARTFR_TXFF) != 0);
 		UART0->DR = ctosend;
 	break;
 	}
-
 	return;
 }
 ///////////////////////fprintcharUART ends/////////////////////////////////////
@@ -46,7 +46,7 @@ void fprintcharUART(UART_modules_t UART_module, char ctosend) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// fprintcharUART() follows
+// fprintstringUART() follows
 // Purpose: Prints a string ('cpprintme') on one ('UART_module')
 //          of the TM4C's eight UARTs
 //
@@ -54,7 +54,6 @@ void fprintcharUART(UART_modules_t UART_module, char ctosend) {
 
 void fprintstringUART(UART_modules_t UART_module, char *cpprintme)
 {
-
 	while(*cpprintme)
 	  {fprintcharUART(UART_module, *(cpprintme++));
 	  }
@@ -71,26 +70,75 @@ void fprintstringUART(UART_modules_t UART_module, char *cpprintme)
 //
 ////////////////////////////////////////////////////////////////////////////////
 char fgetCharUART(UART_modules_t UART_module){
-
 	char cReturnMe;
-
 	switch(UART_module)
 		{
 		case UART_0:
 			while( (UART0->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
 			cReturnMe = UART0->DR;   // retreive the newly arrived char
 		break;
-					//TODO code other module cases here as required.
+							//TODO code other module cases here as required.
 		default:
 			while( (UART0->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
 			cReturnMe = UART0->DR;   // retreive the newly arrived char
 		break;
 		}
-
 	return cReturnMe;
 }
 ///////////////////////fgetcharUART() ends//////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// fprintUint32UART() follows
+// Purpose: Prints a 'uint32I' on one ('UART_module') of the TM4C's eight UARTs
+//          in 'base' (= DEC or HEX)
+////////////////////////////////////////////////////////////////////////////////
+void fprintUint32UART(UART_modules_t UART_module,
+		              uint32_t uint32Int2Prnt, base_t base)
+{
+	 const char digit[] = "0123456789ABCDEF";
+	 uint32_t baseVal;
+	 uint32_t divDown;
+	 char cStringifiedInt2Prnt[14];
+	 char* pcStringifiedInt2Prnt = cStringifiedInt2Prnt;
+
+	switch(base)
+			{
+			case HEX:
+				  baseVal = 16;
+				  *pcStringifiedInt2Prnt++ = '0';
+				  *pcStringifiedInt2Prnt++ = 'x';
+			break;
+
+			case DEC:
+				  baseVal = 10;
+			break;
+			//TODO code other module cases here as required.
+			default:
+				 baseVal = 10;
+			break;
+			}
+	divDown = uint32Int2Prnt;
+    do{  // work out number of places needed by repeated divide-by-ten(or 16)
+        divDown = divDown / baseVal;
+        ++pcStringifiedInt2Prnt; //increment ptr as we go
+    } while(divDown);
+
+    *pcStringifiedInt2Prnt = '\0';  //write terminating char
+
+    do{     //Move back through string inserting digits
+   	*--pcStringifiedInt2Prnt= digit[uint32Int2Prnt%baseVal];
+    	uint32Int2Prnt = uint32Int2Prnt/baseVal;
+    } while(uint32Int2Prnt);
+
+    //now print the string
+	fprintstringUART(UART_module, cStringifiedInt2Prnt);
+	return;
+}
+/////////////////////// fprintUint32UART()////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,5 +334,7 @@ void fstartUART(UART_modules_t UART_module, baud_t baud_rate){
 
 ///////////////////////fstartUART ends///////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
