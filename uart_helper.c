@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //
 // Voltage Bias - the Blog.
 // Author: Gilbert Waltoon
@@ -10,7 +10,8 @@
 //
 // Version 0: Oct 22, 2016
 // Version 1: Oct 25, 2016  - Added fprintUint32UART()
-//
+// Version 2: Oct 29, 2016  - Major rewrite of all function prototypes to take
+//							  UART0_Types, UARTConfig_t arguments
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "TM4C123GH6PM.h"
@@ -24,24 +25,18 @@
 //          of the TM4C's eight UARTs
 //
 ////////////////////////////////////////////////////////////////////////////////
+void fPrintCharUART(UART0_Type *UARTx, char cPrintMe){
 
-void fprintcharUART(UART_modules_t UART_module, char ctosend) {
-
-	switch(UART_module)
+	while( (UARTx->FR & UARTFR_TXFF) != 0 )
 	{
-	case UART_0:
-		while( (UART0->FR & UARTFR_TXFF) != 0 );
-		 UART0->DR = ctosend;
-	break;
-						//TODO code other module cases here as required.
-	default:
-		while((UART0->FR & UARTFR_TXFF) != 0);
-		UART0->DR = ctosend;
-	break;
-	}
-	return;
+		//do nothing
+	};
+
+	UARTx->DR = cPrintMe;
+
+    return;
 }
-///////////////////////fprintcharUART ends/////////////////////////////////////
+///////////////////////fprintcharUART ends//////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -52,16 +47,17 @@ void fprintcharUART(UART_modules_t UART_module, char ctosend) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-void fprintstringUART(UART_modules_t UART_module, char *cpprintme)
-{
-	while(*cpprintme)
-	  {fprintcharUART(UART_module, *(cpprintme++));
-	  }
-  	return;
+void fPrintStringUART(UART0_Type* UARTx, char *strPrintMe){
+	while(*strPrintMe) {
+		 	 	 	 	 fPrintCharUART(UARTx, *(strPrintMe++));
+					   }
+	return;
 }
 
-///////////////////////fprintcharUART ends//////////////////////////////////////
+///////////////////////fprintstringUART ends////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,20 +65,12 @@ void fprintstringUART(UART_modules_t UART_module, char *cpprintme)
 // Purpose: Returns a char read from one ('UART_module') of the TM4C's UARTs
 //
 ////////////////////////////////////////////////////////////////////////////////
-char fgetCharUART(UART_modules_t UART_module){
+char fGetCharUART(UART0_Type* UARTx){
 	char cReturnMe;
-	switch(UART_module)
-		{
-		case UART_0:
-			while( (UART0->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
-			cReturnMe = UART0->DR;   // retreive the newly arrived char
-		break;
-							//TODO code other module cases here as required.
-		default:
-			while( (UART0->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
-			cReturnMe = UART0->DR;   // retreive the newly arrived char
-		break;
-		}
+
+			while( (UARTx->FR & UARTFR_RXFE) != 0) {}; //loop, waiting for char
+			cReturnMe = UARTx->DR;   // retreive the newly arrived char
+
 	return cReturnMe;
 }
 ///////////////////////fgetcharUART() ends//////////////////////////////////////
@@ -95,8 +83,7 @@ char fgetCharUART(UART_modules_t UART_module){
 // Purpose: Prints a 'uint32I' on one ('UART_module') of the TM4C's eight UARTs
 //          in 'base' (= DEC or HEX)
 ////////////////////////////////////////////////////////////////////////////////
-void fprintUint32UART(UART_modules_t UART_module,
-		              uint32_t uint32Int2Prnt, base_t base)
+void fPrintUint32UART(UART0_Type *UARTx, uint32_t uint32Int2Prnt, base_t base)
 {
 	 const char digit[] = "0123456789ABCDEF";
 	 uint32_t baseVal;
@@ -134,11 +121,12 @@ void fprintUint32UART(UART_modules_t UART_module,
     } while(uint32Int2Prnt);
 
     //now print the string
-	fprintstringUART(UART_module, cStringifiedInt2Prnt);
+	fPrintStringUART(UARTx, cStringifiedInt2Prnt);
 	return;
 }
-/////////////////////// fprintUint32UART()////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////// fprintUint32UART()//////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,91 +136,35 @@ void fprintUint32UART(UART_modules_t UART_module,
 // N.B Currently only configures UART_0 for Baud9600 or Baud115200
 //     and 8bit, 1stop bit, no parity
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+void fStartUART(UART0_Type *UARTx, UARTConfig_t *UARTxCfg, baud_t baud_rate){
 
-void fstartUART(UART_modules_t UART_module, baud_t baud_rate){
-	// See page 902 of the TI TM4C123GH6PM datasheet.
+// See page 902 of the TI TM4C123GH6PM datasheet.
+	  SYSCTL->RCGCUART |= (UARTxCfg->RCGCUART_Rx);
 
-	// Rather than code multuple switch/case here, there is probably a neater way
-	// to select amongst the UART module through offset vectors.
-	// ...but this works and is a simple enough.
+//Enable the clock to the appropriate GPIO module via RCGCGPIO reg. (p340).
+//To find out which GPIO port to enable, refer to Table 23-5 on page 1351.
+	  SYSCTL->RCGCGPIO |= (UARTxCfg->RCGCGPIO_Rx);
 
-	//Enable the UART module using the RCGCUART register (see page 344).
-	switch(UART_module)
-	{
-		case UART_0:
-	    	  SYSCTL->RCGCUART |= RCGCUART_R0;
-	    break;
-	   //TODO code other module cases here as required.
-	    default:
-	    	  SYSCTL->RCGCUART |= RCGCUART_R0;
-	   break;
-	    }
+// Set the GPIO AFSEL bits for the appropriate pins (see page 671).
+// To determine which GPIOs to configure, see Table 23-4 on page 1344
+	  (UARTxCfg->GPIOx)->AFSEL |= (UARTxCfg->GPIOAFSEL_AFSEL_x);
 
-	//Enable the clock to the appropriate GPIO module via the RCGCGPIO register (see page 340).
-	//To find out which GPIO port to enable, refer to Table 23-5 on page 1351.
-	switch(UART_module)
-	{
-		case UART_0:
-			SYSCTL->RCGCGPIO |= RCGCGPIO_R0; //port A
-		break;
-		   //TODO code other module cases here as required.
-		default:
-			SYSCTL->RCGCGPIO |= RCGCGPIO_R0; //port A
-		break;
-		    }
+//4. Configure the GPIO current level and/or slew rate as specified for mode
+//   selected (see page 673 and page 681).
 
-	//Set the GPIO AFSEL bits for the appropriate pins (see page 671). To determine which GPIOs to
-	//configure, see Table 23-4 on page 1344
-	switch(UART_module)
-		   {
-		    case UART_0:
-		    	  GPIOA->AFSEL |= (GPIOAFSEL_AFSEL_0|GPIOAFSEL_AFSEL_1) ; //set pins PA0,PA1 to alternate UART function
-		    break;
-		   //TODO code other module cases here as required.
-		    default:
-		    	  GPIOA->AFSEL |= (GPIOAFSEL_AFSEL_0|GPIOAFSEL_AFSEL_1); //set pins PA0,PA1 to alternate UART function
-		   break;
-		    }
+//5. Configure the PMCn fields in the GPIOPCTL register to assign the
+//   UART signals to the appropriatepins (see p688 and Table 23-5 on p1351)
+	   (UARTxCfg->GPIOx)->PCTL |= (UARTxCfg->GPIOPCTL_PMCx_x);
+	   (UARTxCfg->GPIOx)->DEN  |= (UARTxCfg->GPIODEN_DEN_x);
 
+// Get ready to set baud rate...
+// Disable the UART by clearing the UARTEN bit in the UARTCTL register.
+	     UARTx->CTL &=~UARTCTL_UARTEN;
 
-		//4. Configure the GPIO current level and/or slew rate as specified for the mode selected (see
-		//page 673 and page 681).
-
-		//  5. Configure the PMCn fields in the GPIOPCTL register to assign the UART signals to the appropriate
-		//pins (see page 688 and Table 23-5 on page 1351).
-
-	switch(UART_module)
-		   {
-		    case UART_0:
-
-		    	  GPIOA->PCTL |=GPIOPCTL_PMC0_0|GPIOPCTL_PMC1_0;
-		    	  GPIOA->DEN  |=GPIODEN_DEN_0|GPIODEN_DEN_1;  //enable the digital function for the UART pins
-		    break;
-		   //TODO code other module cases here as required.
-		    default:
-		    	 GPIOA->PCTL |=GPIOPCTL_PMC0_0|GPIOPCTL_PMC1_0;
-		    	 GPIOA->DEN  |=GPIODEN_DEN_0|GPIODEN_DEN_1;  //enable the digital function for the UART pins
-		   break;
-		    }
-
-		//get ready to set baud rate...
-		// Disable the UART by clearing the UARTEN bit in the UARTCTL register.
-		switch(UART_module)
-			   {
-			    case UART_0:
-			    	UART0->CTL &=~UARTCTL_UARTEN;
-			    break;
-			   //TODO code other module cases here as required.
-			    default:
-			    	UART0->CTL &=~UARTCTL_UARTEN;
-			   break;
-			    }
-
-
-		//declare a couple of variables to hold integer and fractional baud rate settings
-		//Use the datasheet formualae p896
-		//BRD = BRDI + BRDF = UARTSysClk / (ClkDiv * Baud Rate)
-
+// Declare some variables to hold integer and fractional baud rate settings
+// Use the datasheet formualae p896
+// BRD = BRDI + BRDF = UARTSysClk / (ClkDiv * Baud Rate)
 		uint32_t ui32BRDI;
 		uint32_t ui32BRDF;
 		uint32_t ui32baud;
@@ -244,97 +176,88 @@ void fstartUART(UART_modules_t UART_module, baud_t baud_rate){
 			    case baud115200:
 			    	ui32baud = 115200;
 			    break;
-			   //TODO code other module cases here as required.
+			   //TODO code other baud cases here as required.
+			   // High speeds may require additional reg. configs.
+			   // - refer to datasheet
 			    default:
 			    	ui32baud = 9600;
 			   break;
 			    }
-		ui32BRDI = ( SYS_CLOCK_HZ / (16 * ui32baud) ); //TODO For high speed operation, formula may need revising.
+//TODO For high speed operation, formula may need revising.
+		ui32BRDI = ( SYS_CLOCK_HZ / (16 * ui32baud) );
 		ui32BRDF = ((((SYS_CLOCK_HZ * 8 / ui32baud) + 1 ) /2) % 64);
+	    UARTx->IBRD = ui32BRDI;
 
-		//2. Write the integer portion of the BRD to the UARTIBRD register.
-		switch(UART_module)
-					   {
-					    case UART_0:
-					    	 UART0->IBRD = ui32BRDI;
-					    break;
-					   //TODO code other module cases here as required.
-					    default:
-					    	 UART0->IBRD = ui32BRDI;
-					   break;
-					    }
+//3. Write the fractional portion of the BRD to the UARTFBRD register.
+	   UARTx->FBRD = ui32BRDF;
 
-		//3. Write the fractional portion of the BRD to the UARTFBRD register.
-		switch(UART_module)
-					   {
-					    case UART_0:
-					    	 UART0->FBRD = ui32BRDF;
-					    break;
-					   //TODO code other module cases here as required.
-					    default:
-					    	 UART0->FBRD= ui32BRDF;
-					   break;
-					    }
+//4. Write the desired serial parameters to the UARTLCRH register
+	UARTx->LCRH |= (UARTLCRH_WLEN_2|UARTLCRH_WLEN_1);             //8bit
+	UARTx->LCRH &= ~UARTLCRH_STP2;                                //1 stop bit
+	UARTx->LCRH  &= ~UARTLCRH_PEN ;                               //no parity
 
+//5. Configure the UART clock source by writing to the UARTCC register.
+//   Use system clk
+	UARTx->CC &=~(UARTCC_CS_3|UARTCC_CS_2|UARTCC_CS_1|UARTCC_CS_0);
 
+//6. Optionally, configure  DMA (see �Micro Direct Memory Access" p585)
+//   and enable the DMA option(s) in the UARTDMACTL register.
 
-	//4. Write the desired serial parameters to the UARTLCRH register (in this case, a value of
-	//0x0000.0060).
-		switch(UART_module)
-		{
-			case UART_0:
-				UART0->LCRH |= (UARTLCRH_WLEN_2|UARTLCRH_WLEN_1);  //8bit, no parity, 1 stop bit
-				UART0->LCRH &= ~UARTLCRH_STP2; //1 stop bit
-				UART0->LCRH  &= ~UARTLCRH_PEN ; //no parity
-
-				//UART0->LCRH = (0x3<<5); //8bit, no parity, 1 stop bit
-			break;
-				//TODO code other module cases here as required.
-			default:
-				UART0->LCRH |= (UARTLCRH_WLEN_2|UARTLCRH_WLEN_1);  //8bit, no parity, 1 stop bit
-				UART0->LCRH &= ~UARTLCRH_STP2; //1 stop bit
-				UART0->LCRH  &= ~UARTLCRH_PEN ; //no parity
-			break;
-		}
-
-
-	//5. Configure the UART clock source by writing to the UARTCC register.
-		switch(UART_module)
-		 {
-			case UART_0:
-				UART0->CC &=~(UARTCC_CS_3|UARTCC_CS_2|UARTCC_CS_1|UARTCC_CS_0); //use system clock
-			break;
-				//TODO code other module cases here as required.
-			default:
-				UART0->CC &=~(UARTCC_CS_3|UARTCC_CS_2|UARTCC_CS_1|UARTCC_CS_0);
-			break;
-				 }
-
-
-
-	//6. Optionally, configure the µDMA channel (see “Micro Direct Memory Access (µDMA)” on page 585)
-	//and enable the DMA option(s) in the UARTDMACTL register.
-
-
-	//7. Enable the UART by setting the UARTEN bit in the UARTCTL register.
-		switch(UART_module)
-				 {
-					case UART_0:
-						 UART0->CTL |= (UARTCTL_UARTEN| UARTCTL_TXE| UARTCTL_RXE);
-					break;
-						//TODO code other module cases here as required.
-					default:
-						UART0->CTL |= (UARTCTL_UARTEN| UARTCTL_TXE| UARTCTL_RXE);
-					break;
-						 }
-
+//7. Enable the UART by setting the UARTEN bit in the UARTCTL register.
+	UARTx->CTL |= (UARTCTL_UARTEN| UARTCTL_TXE| UARTCTL_RXE);
 
 	return;
 }
 
-///////////////////////fstartUART ends///////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+///////////////////////fstartUART ends//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
+////////////////////////////////////////////////////////////////////////////////
+// fUartHelperExamples() follows
+// Purpose : Show example use of uart_helper.c functions
+//
+////////////////////////////////////////////////////////////////////////////////
+void fUartHelperExample(){
+  char cKeyPress;
 
+  fStartUART(UART0, UART0_CFG, baud115200);
+
+  fPrintStringUART(UART0, "\n\r Here's 127 in decimal: ");
+  fPrintUint32UART(UART0, 127, DEC); fPrintStringUART(UART0,"\n\r");
+  fPrintStringUART(UART0, " Here it is in hex: ");
+  fPrintUint32UART(UART0, 127, HEX); fPrintStringUART(UART0,"\n\r");
+
+  while(1){  									//echo key-presses on UART0
+	 	fPrintStringUART(UART0, " Press a key ");
+	 	cKeyPress = fGetCharUART(UART0); fPrintStringUART(UART0,"\n\r");
+	 	fPrintStringUART(UART0, " You pressed ");
+	 	fPrintCharUART(UART0, cKeyPress); fPrintStringUART(UART0,"\n\r");
+	       }
+
+return;
+}
+///////////////////////main() ends//////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+//todo write description
+pUARTConfig_t fConstructStaticUART_CFG(uint32_t uint32RCGCUART_Rx,            \
+										uint32_t uint32RCGCGPIO_Rx,           \
+										GPIOA_Type* gpioGPIOx,				  \
+										uint32_t uint32GPIOAFSEL_AFSEL_x,     \
+										uint32_t unint32GPIOPCTL_PMCx_x,      \
+										uint32_t uint32GPIODEN_DEN_x          \
+										)
+{
+	static UARTConfig_t strucUartx_Cfg; //declare a (static) structure variable...
+	                                    // ...fill it in...
+	strucUartx_Cfg.RCGCUART_Rx       = uint32RCGCUART_Rx;
+	strucUartx_Cfg.RCGCGPIO_Rx       = uint32RCGCGPIO_Rx;
+	strucUartx_Cfg.GPIOx             = gpioGPIOx;
+	strucUartx_Cfg.GPIOAFSEL_AFSEL_x = uint32GPIOAFSEL_AFSEL_x;
+	strucUartx_Cfg.GPIOPCTL_PMCx_x   = unint32GPIOPCTL_PMCx_x;
+	strucUartx_Cfg.GPIODEN_DEN_x     = uint32GPIODEN_DEN_x;
+
+	return &strucUartx_Cfg;              // ...and return a pointer to it
+}
 

@@ -35,6 +35,13 @@
 #define RCGCGPIO_R0 (1U<<0)
 
 #define RCGCUART_R0 (1U<<0)
+#define RCGCUART_R1 (1U<<1)
+#define RCGCUART_R2 (1U<<2)
+#define RCGCUART_R3 (1U<<3)
+#define RCGCUART_R4 (1U<<4)
+#define RCGCUART_R5 (1U<<5)
+#define RCGCUART_R6 (1U<<6)
+#define RCGCUART_R7 (1U<<7)
 
 #define UARTCC_CS_0 (1U<<0)
 #define UARTCC_CS_1 (1U<<1)
