@@ -29,10 +29,37 @@
 #define GPIODEN_DEN_0   (1U<<0)
 #define GPIODEN_DEN_1   (1U<<1)
 
+#define GPIODIR_DIR_0 (1U<<0)
+#define GPIODIR_DIR_1 (1U<<1)
+#define GPIODIR_DIR_2 (1U<<2)
+#define GPIODIR_DIR_3 (1U<<3)
+#define GPIODIR_DIR_4 (1U<<4)
+#define GPIODIR_DIR_5 (1U<<5)
+#define GPIODIR_DIR_6 (1U<<6)
+#define GPIODIR_DIR_7 (1U<<7)
+
+#define GPIOAMSEL_GPIOAMSEL_0 (1U<<0)
+#define GPIOAMSEL_GPIOAMSEL_1 (1U<<1)
+#define GPIOAMSEL_GPIOAMSEL_2 (1U<<2)
+#define GPIOAMSEL_GPIOAMSEL_3 (1U<<3)
+#define GPIOAMSEL_GPIOAMSEL_4 (1U<<4)
+#define GPIOAMSEL_GPIOAMSEL_5 (1U<<5)
+#define GPIOAMSEL_GPIOAMSEL_6 (1U<<6)
+#define GPIOAMSEL_GPIOAMSEL_7 (1U<<7)
+
 #define GPIOPCTL_PMC0_0 (1U<<0)
 #define GPIOPCTL_PMC1_0 (1U<<4)
 
+#define RCGCADC_R0 (1U<<0)
+#define RCGCADC_R1 (1U<<1)
+
 #define RCGCGPIO_R0 (1U<<0)
+#define RCGCGPIO_R1 (1U<<1)
+#define RCGCGPIO_R2 (1U<<2)
+#define RCGCGPIO_R3 (1U<<3)
+#define RCGCGPIO_R4 (1U<<4)
+#define RCGCGPIO_R5 (1U<<5)
+
 
 #define RCGCUART_R0 (1U<<0)
 #define RCGCUART_R1 (1U<<1)

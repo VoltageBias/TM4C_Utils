@@ -47,7 +47,7 @@
 //  uint32_t GPIOPCTL_PMCx_x;  "Conf. PMCn fields in GPIOPCTL reg. to assign..
 //  uint32_t GPIODEN_DEN_x;     ...UART signals to the appropriate"
 //        }
-	typedef struct {
+typedef struct {
 		uint32_t RCGCUART_Rx;                                                \
 		uint32_t RCGCGPIO_Rx;                                                \
 		GPIOA_Type *GPIOx;                                                   \
@@ -57,12 +57,12 @@
 	} UARTConfig_t, *pUARTConfig_t;
 
 
-	pUARTConfig_t fConstructStaticUART_CFG(uint32_t,                         \
-		                                uint32_t,                            \
-										GPIOA_Type* ,                        \
-										uint32_t,                            \
-										uint32_t,                            \
-										uint32_t);
+pUARTConfig_t fConstructStaticUART_CFG(uint32_t,              \
+									   uint32_t,              \
+									   GPIOA_Type* ,          \
+									   uint32_t,              \
+									   uint32_t,              \
+									   uint32_t);
 
 // UART0 uses PA0(Rx), PA1(Tx)
 #define UART0_CFG  ( fConstructStaticUART_CFG(                               \
@@ -85,8 +85,9 @@
 //                UART Helper function prototypes follow                      //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Startup one ('UART_module) of the TM4C's eight UARTS at 'baud_rate'
-// Currently only UART_0 and Baud9600 or Baud115200, 8bit, 1stop bit, no parity
+// Startup one of the TM4C's eight UARTS at 'baud_rate'
+// Currently Baud9600 or Baud115200, 8bit, 1stop bit, no parity
+// Also only UART0_CFG defined so far
 	typedef enum  {
 	 	 baud9600,                                  //TODO add others as needed
 	 	 baud115200 } baud_t;
@@ -98,7 +99,7 @@
 //Prints a string on one  of the TM4C's eight UARTs
 	void fPrintStringUART(UART0_Type*, char*);
 
-//Returns a char from one ('UART_module') of the TM4C's eight UARTs
+//Returns a char from one of the TM4C's eight UARTs
 	char fGetCharUART(UART0_Type*);
 
 //Prints an integer ('uint32I') on one ('UART_module') of the TM4C's eight UARTs
