@@ -15,7 +15,58 @@
 #ifndef TM4C_REGISTER_FIELDS_H_
 #define TM4C_REGISTER_FIELDS_H_
 
-#define ADCACTSS_ASEND (1U<<0)
+#define ADCACTSS_ASEN0 (1U<<0)
+#define ADCACTSS_ASEN1 (1U<<1)
+#define ADCACTSS_ASEN2 (1U<<2)
+#define ADCACTSS_ASEN3 (1U<<3)
+
+#define ADCEMUX_EM0_0 (1U<<0)
+#define ADCEMUX_EM0_1 (1U<<1)
+#define ADCEMUX_EM0_2 (1U<<2)
+#define ADCEMUX_EM0_3 (1U<<3)
+
+#define ADCEMUX_EM1_0 (1U<<4)
+#define ADCEMUX_EM1_1 (1U<<5)
+#define ADCEMUX_EM1_2 (1U<<6)
+#define ADCEMUX_EM1_3 (1U<<7)
+
+#define ADCEMUX_EM2_0 (1U<<8)
+#define ADCEMUX_EM2_1 (1U<<9)
+#define ADCEMUX_EM2_2 (1U<<10)
+#define ADCEMUX_EM2_3 (1U<<11)
+
+#define ADCEMUX_EM3_0 (1U<<12)
+#define ADCEMUX_EM3_1 (1U<<13)
+#define ADCEMUX_EM3_2 (1U<<14)
+#define ADCEMUX_EM3_3 (1U<<15)
+
+#define ADCIM_MASK0 (1U<<0)
+#define ADCIM_MASK1 (1U<<1)
+#define ADCIM_MASK2 (1U<<2)
+#define ADCIM_MASK3 (1U<<3)
+#define ADCIM_DCONSS0 (1U<<16)
+#define ADCIM_DCONSS1 (1U<<17)
+#define ADCIM_DCONSS2 (1U<<18)
+#define ADCIM_DCONSS3 (1U<<19)
+
+#define ADCISC_IN0 (1U<<0)
+#define ADCISC_IN1 (1U<<1)
+#define ADCISC_IN2 (1U<<2)
+#define ADCISC_IN3 (1U<<3)
+#define ADCISC_DCINSS0 (1U<<16)
+#define ADCISC_DCINSS1 (1U<<17)
+#define ADCISC_DCINSS2 (1U<<18)
+#define ADCISC_DCINSS3 (1U<<19)
+
+#define ADCSSCTL3_D0   (1U<<0)
+#define ADCSSCTL3_END0 (1U<<1)
+#define ADCSSCTL3_IE0  (1U<<2)
+#define ADCSSCTL3_TS0  (1U<<3)
+
+#define ADCSSMUX3_MUX0_0 (1U<<0)
+#define ADCSSMUX3_MUX0_1 (1U<<1)
+#define ADCSSMUX3_MUX0_2 (1U<<2)
+#define ADCSSMUX3_MUX0_3 (1U<<3)
 
 #define GPIOAFSEL_AFSEL_0 (1U<<0)
 #define GPIOAFSEL_AFSEL_1 (1U<<1)
@@ -60,7 +111,6 @@
 #define RCGCGPIO_R4 (1U<<4)
 #define RCGCGPIO_R5 (1U<<5)
 
-
 #define RCGCUART_R0 (1U<<0)
 #define RCGCUART_R1 (1U<<1)
 #define RCGCUART_R2 (1U<<2)
@@ -91,7 +141,5 @@
 #define UARTCTL_UARTEN (1U<<0)
 
 #define UARTFR_TXFF (1U<<5)
-
-
 
 #endif /* TM4C_REGISTER_FIELDS_H_ */
