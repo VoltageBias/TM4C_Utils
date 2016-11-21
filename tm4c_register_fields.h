@@ -68,6 +68,14 @@
 #define ADCSSMUX3_MUX0_2 (1U<<2)
 #define ADCSSMUX3_MUX0_3 (1U<<3)
 
+#define CPAC_CP10_0 (1U<<20)
+#define CPAC_CP10_1 (1U<<21)
+#define CPAC_CP11_0 (1U<<22)
+#define CPAC_CP11_1 (1U<<23)
+
+#define FPCC_LSPEN (1U<<30)
+#define FPCC_ASPEN (1U<<31)
+
 #define GPIOAFSEL_AFSEL_0 (1U<<0)
 #define GPIOAFSEL_AFSEL_1 (1U<<1)
 #define GPIOAFSEL_AFSEL_2 (1U<<2)
