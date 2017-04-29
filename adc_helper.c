@@ -9,14 +9,35 @@
 // PURPOSE  : A set of helper functions to operate the TM4C123 ADC
 //
 // Version 0: Oct 30, 2016
+// Version 1: Apr 29, 2017 - Added fADCExample(). Writes ADC values to UART
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "TM4C123GH6PM.h"
 #include "adc_helper.h"
 #include "board_support_package.h"
 #include "tm4c_register_fields.h"
+#include "uart_helper.h"
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////                fADCExample() follows                 ////////////
+////////////////////////////////////////////////////////////////////////////////
+void fADCExample(){
+	fStartUART(UART0, UART0_CFG, baud115200);
+	fPrintStringUART(UART0, "\n\r ADC Example ");
+
+	fInitADC(ADC1, AIN2_PE1);
+	fPrintStringUART(UART0, "\n\r Finished ADC initialisation ");
+
+	fStartADC(SS_ADC1_AIN2_0);
+	fPrintStringUART(UART0, "\n\r Finished Sample Sequence set up... ");
+
+while(1){
+};
+
+	return;
+}
 ////////////////////////////////////////////////////////////////////////////////
 //////////////                fInitADC() follows                    ////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +47,7 @@ void fInitADC(ADC0_Type* ADCx, AIN_t* AINx)
 	if (ADCx == ADC0) {  // if using ADC0
 			SYSCTL->RCGCADC |= RCGCADC_R0;
 					 }
-	else { //no if-else since ADC0_Type already restricted to 2 possible values
+	else { // ADCx restricted to 2 possible values
 			SYSCTL->RCGCADC |= RCGCADC_R1;
 					    }
 // 2. Enable clock to the appropriate GPIO modules via the RCGCGPIO reg. (p340)
@@ -81,11 +102,11 @@ void fStartADC(SS_CFG_t *SS_CFGn){
 
 // Next line fetches SS_CFGn->SSMUXn from the SS_AINn structure.
 // 'SS_CFGn->SSMUXn' holds a ptr that points to an adress e.g  "&ADC1->SSMUX3"
-// (as defined in the #define) i.e.the address of ADC1's SSMUX3 register.
-//  We write the SSMUXn_val to this address.
+// (as defined in the adc_helper.h and TM4C123GH6PM.h) i.e.the address
+// of ADC1's SSMUX3 register. We write the SSMUXn_val to this address.
 
 		*(SS_CFGn->SSMUXn) |= SS_CFGn->SSMUXn_val;
-////////////////////////////////////////////////////////////////////////////////
+
 //5. For each sample in the sample sequence, configure the sample control bits
 // in the corresponding nibble in the ADCSSCTLn register. When programming
 // the last nibble, ensure that the END bit is set. Failure to set the END bit
