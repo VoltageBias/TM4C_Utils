@@ -87,6 +87,13 @@
 
 #define GPIODEN_DEN_0   (1U<<0)
 #define GPIODEN_DEN_1   (1U<<1)
+#define GPIODEN_DEN_2   (1U<<2)
+#define GPIODEN_DEN_3   (1U<<3)
+#define GPIODEN_DEN_4   (1U<<4)
+#define GPIODEN_DEN_5   (1U<<5)
+#define GPIODEN_DEN_6   (1U<<6)
+#define GPIODEN_DEN_7   (1U<<7)
+
 
 #define GPIODIR_DIR_0 (1U<<0)
 #define GPIODIR_DIR_1 (1U<<1)
@@ -108,6 +115,49 @@
 
 #define GPIOPCTL_PMC0_0 (1U<<0)
 #define GPIOPCTL_PMC1_0 (1U<<4)
+#define GPIOPCTL_PMC1_1 (1U<<5)
+#define GPIOPCTL_PMC1_2 (1U<<6)
+#define GPIOPCTL_PMC1_3 (1U<<7)
+#define GPIOPCTL_PMC4_0 (1U<<16)
+#define GPIOPCTL_PMC4_1 (1U<<17)
+#define GPIOPCTL_PMC4_2 (1U<<18)
+#define GPIOPCTL_PMC4_3 (1U<<19)
+#define GPIOPCTL_PMC6_0 (1U<<24)
+#define GPIOPCTL_PMC6_1 (1U<<25)
+#define GPIOPCTL_PMC6_2 (1U<<26)
+#define GPIOPCTL_PMC6_3 (1U<<27)
+#define GPIOPCTL_PMC7_0 (1U<<28)
+#define GPIOPCTL_PMC7_1 (1U<<29)
+#define GPIOPCTL_PMC7_2 (1U<<30)
+#define GPIOPCTL_PMC7_3 (1U<<31)
+
+#define PWMnGENA_ACTLOAD_0 (1U<<2)
+#define PWMnGENA_ACTLOAD_1 (1U<<3)
+#define PWMnGENA_ACTCMPAD_1 (1U<<7)
+
+#define PWMnGENB_ACTLOAD_0 (1U<<2)
+#define PWMnGENB_ACTLOAD_1 (1U<<3)
+#define PWMnGENB_ACTCMPBD_1 (1U<<11)
+
+#define PWMCTL_GLOBALSYNC0 (1U<<0)
+#define PWMCTL_GLOBALSYNC1 (1U<<1)
+#define PWMCTL_GLOBALSYNC2 (1U<<2)
+#define PWMCTL_GLOBALSYNC3 (1U<<3)
+
+#define PWMENABLE_PWM0EN (1U<<0)
+#define PWMENABLE_PWM1EN (1U<<1)
+
+#define RCC_PWMDIV_0 (1U<<17)
+#define RCC_PWMDIV_1 (1U<<18)
+#define RCC_PWMDIV_2 (1U<<19)
+#define RCC_USEPWMDIV (1U<<20)
+
+
+
+
+#define RCGC0_PWM0 (1U<<20)
+
+#define RCGC2_GPIOB (1U<<1)
 
 #define RCGCADC_R0 (1U<<0)
 #define RCGCADC_R1 (1U<<1)
